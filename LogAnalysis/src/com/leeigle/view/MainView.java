@@ -42,6 +42,7 @@ public class MainView implements ActionListener {
 	private JFileChooser jfc = new JFileChooser();
 	private JButton button3 = new JButton("解析");
 	private JProgressBar progressBar = new JProgressBar();
+	private List<String> filePathList = new ArrayList<String>();
 	
 	public MainView() {
 		jfc.setCurrentDirectory(new File("d://"));// 文件选择器的初始目录定为d盘
@@ -84,7 +85,6 @@ public class MainView implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		List<String> filePathList = new ArrayList<String>();
 		if (e.getSource().equals(button1)) {// 判断触发方法的按钮是哪个
 			jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);// 设定只能选择到文件
 			jfc.setMultiSelectionEnabled(true);
@@ -115,7 +115,7 @@ public class MainView implements ActionListener {
 			if (filePathList.size() == 0) {
 				JOptionPane.showMessageDialog(null, "没有可解析日志文件.", "警告",JOptionPane.ERROR_MESSAGE);  
 			} else {
-				
+				new Thread(new ProgressView(progressBar, filePathList)).start();
 			}
 		}
 	}
