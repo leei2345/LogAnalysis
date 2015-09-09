@@ -3,6 +3,7 @@ package com.leeigle.view;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -29,12 +30,21 @@ public class ProgressView implements Runnable {
 		int count = 0;
 		for (String string : filePathList) {
 			File file = new File(string);
-			LineNumberReader reader;
+			LineNumberReader reader = null;
 			try {
 				reader = new LineNumberReader(new FileReader(file));
-				count += reader.getLineNumber();
+				int lineNum = reader.getLineNumber();
+				count += lineNum;
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
+			} finally {
+				if (reader != null) {
+					try {
+						reader.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 		CountDownLatch cdl = new CountDownLatch(count);

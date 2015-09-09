@@ -8,8 +8,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
+import java.util.regex.Pattern;
 
 import javax.swing.JProgressBar;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.Jsoup;
 
 import jxl.Workbook;
 import jxl.write.WritableSheet;
@@ -21,6 +25,7 @@ public class LogHandle implements Runnable {
 	private CountDownLatch cdl;
 	private JProgressBar progress;
 	private File file;
+	private static final Pattern pattern = Pattern.compile("account=\"(\\d{11})\".*srcIp=\"(.*?)\".*accessTime=\"(.*?)\"");
 	
 	public LogHandle(String filePath, CountDownLatch cdl, JProgressBar progress) {
 		this.filePath = filePath;
