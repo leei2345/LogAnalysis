@@ -9,6 +9,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.alibaba.fastjson.JSONObject;
 import com.leeigle.util.LoggerUtil;
 
 
@@ -157,10 +160,28 @@ public class TaobaoApiHandler {
     LoggerUtil.HttpInfoLog(logStr.toString());
     return result;
   }
+  
+  public String getArea () {
+	  String jsonStr = this.sendGet();
+	  String res = null;
+	  try {
+		  JSONObject jsonObject = JSONObject.parseObject(jsonStr);
+		  JSONObject dataOBject = jsonObject.getJSONObject("data");
+		  String region = dataOBject.getString("region");
+		  String city = dataOBject.getString("city");
+		  if (!StringUtils.isBlank(city)) {
+			  region = region +city;
+		  }
+		  res = region;
+	  } catch (Exception e) {
+	  }
+	  return res;
+  }
+  
 
   public static void main(String[] args) {
-    TaobaoApiHandler s = new TaobaoApiHandler("http://www.ganji.com/pub/pub.php?act=pub&method=load&cid=6&mcid=14&domain=bj&h=2&qq-pf-to=pcqq.c2c");
-    String html = s.sendGet();
+    TaobaoApiHandler s = new TaobaoApiHandler("58.61.200.0");
+    String html = s.getArea();
     System.out.println(html);
   }
 }

@@ -45,7 +45,7 @@ public class MainView implements ActionListener {
 	private List<String> filePathList = new ArrayList<String>();
 	
 	public MainView() {
-		jfc.setCurrentDirectory(new File("d://"));// 文件选择器的初始目录定为d盘
+		jfc.setCurrentDirectory(new File("c://Users//Administrator//git//LogAnalysis//LogAnalysis//doc//test//"));// 文件选择器的初始目录定为d盘
 		double lx = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 		double ly = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 		frame.setLocation(new Point((int) (lx / 2) - 250, (int) (ly / 2) - 250));// 设定窗口出现位置

@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import javax.swing.JProgressBar;
 
 import com.leeigle.runner.LogHandle;
+import com.leeigle.util.CountDownLatchUtils;
 
 public class ProgressView implements Runnable {
 
@@ -33,9 +34,12 @@ public class ProgressView implements Runnable {
 			LineNumberReader reader = null;
 			try {
 				reader = new LineNumberReader(new FileReader(file));
+				reader.skip(Long.MAX_VALUE);  
 				int lineNum = reader.getLineNumber();
 				count += lineNum;
 			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {
 				if (reader != null) {
@@ -47,7 +51,7 @@ public class ProgressView implements Runnable {
 				}
 			}
 		}
-		CountDownLatch cdl = new CountDownLatch(count);
+		CountDownLatchUtils cdl = new CountDownLatchUtils(count);
 		for (String filePath : filePathList) {
 			LogHandle handle = new LogHandle(filePath, cdl, progressBar);
 			threadPool.execute(handle);
