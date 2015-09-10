@@ -8,10 +8,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
-import java.util.concurrent.CountDownLatch;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,14 +34,28 @@ public class LogHandle implements Runnable {
 	private String filePath;
 	private CountDownLatchUtils cdl;
 	private JProgressBar progress;
+	private JPanel panel;
 	private File file;
 	private static final Pattern pattern = Pattern.compile("account=\"(\\d{11})\".*dstIp=\"(.*?)\".*accessTime=\"(.*?)\".*url=\"(.*?)\"");
-	private static final Pattern wordPattern = Pattern.compile("[word|wd|q]{1}=(.*?)[\\&]{0,1}?");
+	private static final Pattern wordPattern = Pattern.compile("^.*\\?(.*)$");
+	private static List<String> wordList = new ArrayList<String>();
+	static {
+		wordList.add("word");
+		wordList.add("q");
+		wordList.add("wd");
+		wordList.add("kw");
+		wordList.add("amp;word");
+		wordList.add("amp;q");
+		wordList.add("amp;wd");
+		wordList.add("amp;kw");
+	}
 	
-	public LogHandle(String filePath, CountDownLatchUtils cdl, JProgressBar progress) {
+	
+	public LogHandle(String filePath, CountDownLatchUtils cdl, JProgressBar progress, JPanel panel) {
 		this.filePath = filePath;
 		this.cdl = cdl;
 		this.progress = progress;
+		this.panel = panel;
 		this.file = new File(filePath);
 	}
 
@@ -69,6 +86,7 @@ public class LogHandle implements Runnable {
 				e.printStackTrace();
 			}
 			int index = 1;
+			String showLine = "";
 			while ((line = reader.readLine()) != null) {
 				Matcher matcher = pattern.matcher(line);
 				if (matcher.find()) {
@@ -92,7 +110,16 @@ public class LogHandle implements Runnable {
 						url = URLDecoder.decode(url, "UTF-8");
 						Matcher wordm = wordPattern.matcher(url);
 						if (wordm.find()) {
-							word = wordm.group(1);
+							String reqStr = wordm.group(1);
+							String[] arr = reqStr.split("\\&");
+							for (String metedata : arr) {
+								String[] innerArr = metedata.split("=");
+								if ((innerArr.length != 2) || !wordList.contains(innerArr[0])) {
+									continue;
+								} else {
+									word = innerArr[1];
+								}
+							}
 						}
 					}
 					Label inner1 = new Label(0, index, phone);
@@ -104,10 +131,16 @@ public class LogHandle implements Runnable {
 					sheet.addCell(inner3);
 					sheet.addCell(inner4);
 					index++;
+					showLine = phone + " : " + area + " : " + time + " : " + word + "\r\n";
 				} 
 				cdl.countDown();
 				int precent = cdl.getPrecent();
 				progress.setValue(precent);
+				if (cdl.getCount()%10 == 0 || cdl.getAmount() == cdl.getCount()) {
+					panel.removeAll();
+				}
+				panel.add(new java.awt.Label(showLine));
+				panel.validate();
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -139,10 +172,18 @@ public class LogHandle implements Runnable {
 	}
 	
 	public static void main(String[] args) {
-		Pattern wordPattern = Pattern.compile("[q|word|wd]{1}\\=(.*?)\\&?.*");
-		Matcher m = wordPattern.matcher("http://www.baidu.com/s?word=site:m.ladyyu.com&sdsd=sds");
+		Pattern wordPattern = Pattern.compile("^.*\\?(.*)$");
+		Matcher m = wordPattern.matcher("http://m.baidu.com/s?tn=iphone&word=金星天蝎的小说&rq=金星天蝎&sa=brs_6");
 		if (m.find()) {
-			System.out.println(m.group(1));
+			String[] arr = m.group(1).split("\\&");
+			for (String metedata : arr) {
+				String[] innerArr = metedata.split("=");
+				if (!StringUtils.equals("q", innerArr[0]) && !StringUtils.equals("wd", innerArr[0]) && !StringUtils.equals("word", innerArr[0])) {
+					continue;
+				}
+				System.out.println(Arrays.toString(innerArr));
+			}
+			System.out.println(Arrays.toString(arr));
 		}
 	}
 	

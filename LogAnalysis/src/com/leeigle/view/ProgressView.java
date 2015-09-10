@@ -6,10 +6,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import com.leeigle.runner.LogHandle;
@@ -19,11 +19,13 @@ public class ProgressView implements Runnable {
 
 	private JProgressBar progressBar;
 	private List<String> filePathList;
+	private JPanel panel;
 	private ExecutorService threadPool = Executors.newFixedThreadPool(3);
 	
-	public ProgressView(JProgressBar progressBar, List<String> filePathList)	{
+	public ProgressView(JProgressBar progressBar, List<String> filePathList, JPanel panel)	{
 		this.progressBar = progressBar;
 		this.filePathList = filePathList;
+		this.panel = panel;
 	}
 	@Override
 	public void run() {
@@ -53,7 +55,7 @@ public class ProgressView implements Runnable {
 		}
 		CountDownLatchUtils cdl = new CountDownLatchUtils(count);
 		for (String filePath : filePathList) {
-			LogHandle handle = new LogHandle(filePath, cdl, progressBar);
+			LogHandle handle = new LogHandle(filePath, cdl, progressBar, panel);
 			threadPool.execute(handle);
 		}
         progressBar.setIndeterminate(false);  //采用确定的进度条

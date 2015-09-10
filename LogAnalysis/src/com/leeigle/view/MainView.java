@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
@@ -45,7 +46,7 @@ public class MainView implements ActionListener {
 	private List<String> filePathList = new ArrayList<String>();
 	
 	public MainView() {
-		jfc.setCurrentDirectory(new File("c://Users//Administrator//git//LogAnalysis//LogAnalysis//doc//test//"));// 文件选择器的初始目录定为d盘
+		jfc.setCurrentDirectory(new File("D://"));// 文件选择器的初始目录定为d盘
 		double lx = Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 		double ly = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 		frame.setLocation(new Point((int) (lx / 2) - 250, (int) (ly / 2) - 250));// 设定窗口出现位置
@@ -59,7 +60,7 @@ public class MainView implements ActionListener {
 		
 		panel2.setLayout(new  FlowLayout(FlowLayout.LEFT,10,0));
 		panel2.setBounds(10, 50, 440, 240);
-		
+		panel2.add(new JScrollPane());
 		button3.setBounds(360, 300, 60, 20);
 		
 		button1.addActionListener(this); // 添加事件处理
@@ -115,7 +116,7 @@ public class MainView implements ActionListener {
 			if (filePathList.size() == 0) {
 				JOptionPane.showMessageDialog(null, "没有可解析日志文件.", "警告",JOptionPane.ERROR_MESSAGE);  
 			} else {
-				new Thread(new ProgressView(progressBar, filePathList)).start();
+				new Thread(new ProgressView(progressBar, filePathList, panel2)).start();
 			}
 		}
 	}

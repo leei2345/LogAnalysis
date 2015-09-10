@@ -34,12 +34,12 @@ public class CountDownLatchUtils {
 	}
 	
 	public int getPrecent () {
-		BigDecimal count = new BigDecimal(this.getCount()).multiply(new BigDecimal(100));
+		BigDecimal count = new BigDecimal(this.getCount());
 		BigDecimal amount = new BigDecimal(this.amount);
-		BigDecimal yu = amount.subtract(amount);
+		BigDecimal yu = amount.subtract(count).multiply(new BigDecimal(100));
 		int res = 0;
-		if (yu.intValue() != 0) {
-			res = count.divide(yu, 0, BigDecimal.ROUND_HALF_UP).intValue();
+		if (amount.intValue() != 0) {
+			res = yu.divide(amount, 0, BigDecimal.ROUND_HALF_UP).intValue();
 		}
 		return res;
 	}
